@@ -8,45 +8,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel(){
-    fun insertUser(){
-        val userEntity = UserEntity(nombres = "Juan", apellidos = "Perez")
-        viewModelScope.launch(Dispatchers.IO){
-            RoomApplication.appDatabase.userDao().insertUser(userEntity)
-        }
-    }
-    fun insertUserList(){
-        val users = listOf(
-            UserEntity(nombres = "Juan", apellidos = "Perez"),
-            UserEntity(nombres = "Maria", apellidos = "Lopez"),
-            UserEntity(nombres = "Pedro", apellidos = "Gonzalez"),
-            UserEntity(nombres = "Ana", apellidos = "Martinez"),
-            UserEntity(nombres = "Luis", apellidos = "Garcia")
-        )
+
+    val users = RoomApplication.appDatabase.userDao().getAll()
+
+    fun guardar(nombre: String, apellido: String): String ?{
+
+        if(nombre.isBlank()) return "El nombre es obligatorio"
+        if(apellido.isBlank()) return "El apellido es obligatorio"
+
+        val user = UserEntity(nombre = nombre.trim(), apellido = apellido.trim())
         viewModelScope.launch(Dispatchers.IO) {
-            RoomApplication.appDatabase.userDao().insertUserList(users)
+            RoomApplication.appDatabase.userDao().insertUser(user)
         }
+        return null
     }
 
-    fun updateUser(){
-        val userEntity = UserEntity(userId = 1, nombres = "Jorge", apellidos = "Perez")
-        viewModelScope.launch(Dispatchers.IO){
-            RoomApplication.appDatabase.userDao().updateUser(userEntity)
-            println("DEBUG: Usuario actualizado correctamente")
-        }
-    }
-    fun deleteUser() {
-        val userEntity = UserEntity(userId = 4,"","")
+    fun eliminar (user: UserEntity){
         viewModelScope.launch(Dispatchers.IO) {
-            RoomApplication.appDatabase.userDao().deleteUser(userEntity)
+            RoomApplication.appDatabase.userDao().deleteUser(user)
         }
-    }
-    fun getAllUsers() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val users = RoomApplication.appDatabase.userDao().getAll()
-            users.forEach { user ->
-                println("DEBUG: ${user.userId} - ${user.nombres} - ${user.apellidos}")
-            }
-        }
+
     }
 
 }

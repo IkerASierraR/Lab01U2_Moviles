@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.noomdatabasesierra.data.entity.UserEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -23,7 +24,7 @@ interface UserDao {
     suspend fun deleteUser(user: UserEntity): Int
 
     @Query("SELECT * FROM users")
-    suspend fun getAll(): List<UserEntity>
+    fun getAll(): Flow<List<UserEntity>>
 
     @Query("SELECT * FROM users WHERE userId IN (:userIds)")
     suspend fun getAllById(userIds: IntArray): List<UserEntity>
