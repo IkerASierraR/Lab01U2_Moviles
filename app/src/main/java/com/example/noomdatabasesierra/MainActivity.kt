@@ -24,10 +24,9 @@ class MainActivity : ComponentActivity() {
 
         viewModel.insertUser()
         viewModel.insertUserList()
-
-//        viewModel.updateUser()
-//        viewModel.deleteUser()
-//        viewModel.getAllUsers()
+        viewModel.updateUser()
+        viewModel.deleteUser()
+        viewModel.getAllUsers()
 
         enableEdgeToEdge()
         setContent {
