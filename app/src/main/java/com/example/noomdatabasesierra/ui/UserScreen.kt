@@ -33,9 +33,13 @@ fun UserScreen(viewModel: MainViewModel, modifier: Modifier = Modifier){
 
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var busqueda by remember { mutableStateOf("") }
 
-    val users by viewModel.users.collectAsState(initial = emptyList())
+    val users by remember(busqueda) {
+        if (busqueda.isBlank()) viewModel.users else viewModel.buscarPorApellido(busqueda)
+    }.collectAsState(initial = emptyList())
 
     Column(modifier = modifier.padding(16.dp)) {
 
@@ -43,6 +47,13 @@ fun UserScreen(viewModel: MainViewModel, modifier: Modifier = Modifier){
             value = nombre,
             onValueChange = {nombre = it},
             label = { Text("Nombre") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = {email = it},
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -59,26 +70,41 @@ fun UserScreen(viewModel: MainViewModel, modifier: Modifier = Modifier){
 
         Button(
             onClick = {
-                error = viewModel.guardar(nombre, apellido)
+                error = viewModel.guardar(nombre, apellido, email)
                 if(error == null){
                     nombre = ""
                     apellido = ""
+                    email = ""
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Guardar")
+            Text("Guardar Usuario")
+        }
+
+        OutlinedTextField(
+            value = busqueda,
+            onValueChange = {busqueda = it},
+            label = { Text("Buscar por apellido") },
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        )
+
+        if (users.isEmpty()){
+            Text(
+                text = "No se encontraron usuarios",
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
         LazyColumn {
             items(users){user ->
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)){
+                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)){
                     Row(
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "${user.nombre} - ${user.apellido}",
+                            text = "${user.nombre} - ${user.apellido} - ${user.email ?: "Sin email"}",
                             modifier = Modifier.weight(1f)
                         )
                         TextButton(onClick = { viewModel.eliminar(user)}){

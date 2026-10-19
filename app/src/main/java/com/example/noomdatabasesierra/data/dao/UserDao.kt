@@ -28,4 +28,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE userId IN (:userIds)")
     suspend fun getAllById(userIds: IntArray): List<UserEntity>
+
+    @Query("SELECT * FROM users WHERE last_name LIKE :apellido")
+    fun searchByLastName(apellido: String): Flow<List<UserEntity>>
 }
